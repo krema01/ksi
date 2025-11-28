@@ -1,0 +1,95 @@
+# ---- Java / Maven ----
+/target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven specific
+log/
+dependency-reduced-pom.xml
+release.properties
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+.mvn/timing.properties
+
+# Surefire / test reports
+/surefire-reports/
+
+# ---- IDEs & editors ----
+# IntelliJ IDEA
+/.idea/
+*.iml
+*.iws
+/out/
+
+# VS Code
+.vscode/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# ---- Node / Frontend ----
+/frontend/node_modules/
+/frontend/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ---- Docker / containers / local services ----
+.env
+docker-compose.override.yml
+docker-compose.*.yml
+**/postgres-data/
+**/pgdata/
+postgres-data/
+pgdata/
+
+# Ignore Docker volumes and local DB files
+*.sql
+*.sqlite
+
+# ---- Logs ----
+*.log
+logs/
+*.log.*
+
+# ---- OS files ----
+.DS_Store
+Thumbs.db
+
+# ---- Misc / build artifacts ----
+.build/
+build/
+out/
+
+# Local environment files
+.env.local
+.env.*.local
+
+# generated files
+/generated-sources/
+
+# Coverage
+coverage/
+
+# IDE test runners
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+
+# Keep Maven wrapper if present committed, but ignore wrapper jar
+mvnw.cmd
+mvnw
+mvnw.bat
+.wrapper/**
+
+# Ignore compiled classes anywhere
+**/*.class
+
+# Lock files (optional - adjust if you commit these intentionally)
+# package-lock.json
+# yarn.lock
+
