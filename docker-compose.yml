@@ -23,8 +23,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/qrcode
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-      - QR_SECRET=super-secret-key-2025
-      - QR_EXPIRATION_SECONDS=${QR_EXPIRATION_SECONDS:-300}
+      - QR_SECRET=${QR_SECRET}
+      - QR_EXPIRATION_SECONDS=${QR_EXPIRATION_SECONDS}
     depends_on:
       db:
         condition: service_healthy

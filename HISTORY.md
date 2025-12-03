@@ -168,7 +168,3 @@ Acknowledgements
 
 This repository was implemented and iterated by an AI assistant with continuous feedback from the human reviewer. The HISTORY above documents choices made during that collaborative workflow and includes the primary commands and file edits needed to reproduce the final running system.
 
-If you want, I can:
-- Add the one-command convenience script that automates generate→scan→verify,
-- Add nicer formatting and paging for the frontend time-log list,
-- Extract secrets to an `.env.example` and add run scripts.
