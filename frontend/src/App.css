@@ -136,6 +136,43 @@ input:focus {
   font-size: 1rem;
   text-align: center;
 }
+.logs-wrapper {
+  width: 100%;
+}
+.logs-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+}
+.logs-controls { display:flex; gap:12px; align-items:center }
+.link-btn { background:none; border:none; color:#2a4d69; cursor:pointer; text-decoration:underline; padding:4px }
+.logs-table {
+  width:100%;
+  border-collapse: collapse;
+  margin-top:6px;
+}
+.logs-table th, .logs-table td {
+  padding:8px 10px;
+  border-bottom:1px solid #e6eef8;
+  text-align:left;
+  font-size:0.95rem;
+}
+.logs-table th {
+  color:#2a4d69;
+  font-weight:600;
+}
+.logs-table tbody tr:nth-child(even) { background:#fbfdff }
+.pagination {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:12px;
+  margin-top:10px;
+}
+.page-indicator { color:#4b86b4 }
+.pagination button { padding:6px 12px; border-radius:8px; border:1px solid #cde; background:#f7fbff; cursor:pointer }
+.pagination button:disabled { opacity:0.5; cursor:not-allowed }
 @media (max-width: 500px) {
   .card {
     padding: 18px 8px 16px 8px;

@@ -10,6 +10,8 @@ export default function App(){
   const [status, setStatus] = useState('')
   const [loading, setLoading] = useState(false)
   const [logs, setLogs] = useState([])
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(5)
 
   async function requestQr(action){
     setLoading(true)
@@ -46,11 +48,30 @@ export default function App(){
   async function fetchLogs(){
     try{
       const res = await axios.get(`/api/timelogs`, { params: { userId } })
-      setLogs(res.data || [])
+      // sort by id descending (newest first) and reset paging
+      const sorted = (res.data || []).slice().sort((a,b)=> (b.id||0)-(a.id||0))
+      setLogs(sorted)
+      setPage(1)
     }catch(e){
       setStatus('Fehler beim Laden der Logs: ' + (e.response?.data || e.message))
     }
   }
+
+  function formatTimestamp(ts){
+    try{
+      const d = new Date(ts)
+      if(isNaN(d.getTime())) return ts
+      return d.toLocaleString()
+    }catch(e){
+      return ts
+    }
+  }
+
+  const totalPages = Math.max(1, Math.ceil(logs.length / pageSize))
+  const visibleLogs = logs.slice((page-1)*pageSize, page*pageSize)
+
+  function prevPage(){ setPage(p => Math.max(1, p-1)) }
+  function nextPage(){ setPage(p => Math.min(totalPages, p+1)) }
 
   return (
     <div className="app-bg">
@@ -85,13 +106,45 @@ export default function App(){
           </div>
         )}
         {logs.length>0 && (
-          <div style={{width:'100%', marginTop:14}}>
-            <h3 style={{margin:'8px 0'}}>Zeit-Logs</h3>
-            <ul style={{paddingLeft:18}}>
-              {logs.map(l => (
-                <li key={l.id}>{l.timestamp} — {l.userId} — {l.action}</li>
-              ))}
-            </ul>
+          <div style={{width:'100%', marginTop:14}} className="logs-wrapper">
+            <div className="logs-header">
+              <h3 style={{margin:'4px 0'}}>Zeit-Logs</h3>
+              <div className="logs-controls">
+                <label>Zeilen/Seite:
+                  <select value={pageSize} onChange={e=>{ setPageSize(Number(e.target.value)); setPage(1); }}>
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                  </select>
+                </label>
+                <button className="link-btn" onClick={fetchLogs} disabled={loading}>Aktualisieren</button>
+              </div>
+            </div>
+
+            <table className="logs-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>User</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visibleLogs.map(l => (
+                  <tr key={l.id}>
+                    <td>{formatTimestamp(l.timestamp)}</td>
+                    <td>{l.userId}</td>
+                    <td>{l.action}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="pagination">
+              <button onClick={prevPage} disabled={page<=1}>&larr; Prev</button>
+              <div className="page-indicator">Seite {page} / {totalPages}</div>
+              <button onClick={nextPage} disabled={page>=totalPages}>Next &rarr;</button>
+            </div>
           </div>
         )}
       </div>
