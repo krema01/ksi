@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS time_logs (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL,
+    action VARCHAR(50) NOT NULL,
+    timestamp TIMESTAMP WITH TIME ZONE NOT NULL
+);
+

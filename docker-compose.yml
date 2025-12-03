@@ -9,7 +9,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL","pg_isready -U $${POSTGRES_USER}" ]
       interval: 10s
@@ -23,7 +23,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/qrcode
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-      - QR_SECRET=${QR_SECRET}
+      - QR_SECRET=super-secret-key-2025
       - QR_EXPIRATION_SECONDS=${QR_EXPIRATION_SECONDS:-300}
     depends_on:
       db:

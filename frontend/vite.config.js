@@ -6,7 +6,8 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      '/api': 'http://localhost:8081'
+      // in dev, forward /api to backend port 8080 (backend service)
+      '/api': 'http://localhost:8080'
     }
   }
 })

@@ -1,95 +1,47 @@
-# ---- Java / Maven ----
-/target/
+# Java
 *.class
 *.jar
 *.war
 *.ear
-
-# Maven specific
-log/
-dependency-reduced-pom.xml
-release.properties
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-.mvn/timing.properties
-
-# Surefire / test reports
-/surefire-reports/
-
-# ---- IDEs & editors ----
-# IntelliJ IDEA
-/.idea/
+*.nar
+*.zip
+*.tar.gz
+*.log
+*.cache
+target/
 *.iml
+*.ipr
 *.iws
-/out/
+/.idea/
+/.settings/
 
-# VS Code
-.vscode/
-
-# Eclipse
-.classpath
-.project
+# Maven
 .settings/
+.mvn/
+.mvnrc
+.mvn/**
+release.properties
+dependency-reduced-pom.xml
 
-# ---- Node / Frontend ----
-/frontend/node_modules/
-/frontend/dist/
+# Node
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+/dist
 
-# ---- Docker / containers / local services ----
-.env
-docker-compose.override.yml
-docker-compose.*.yml
-**/postgres-data/
-**/pgdata/
-postgres-data/
-pgdata/
+# Docker
+**/docker-compose.override.yml
+**/docker-compose.*.yml
 
-# Ignore Docker volumes and local DB files
-*.sql
-*.sqlite
-
-# ---- Logs ----
-*.log
-logs/
-*.log.*
-
-# ---- OS files ----
+# OS files
 .DS_Store
 Thumbs.db
 
-# ---- Misc / build artifacts ----
-.build/
-build/
-out/
+# VSCode
+.vscode/
 
-# Local environment files
-.env.local
-.env.*.local
-
-# generated files
-/generated-sources/
-
-# Coverage
-coverage/
-
-# IDE test runners
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-
-# Keep Maven wrapper if present committed, but ignore wrapper jar
-mvnw.cmd
-mvnw
-mvnw.bat
-.wrapper/**
-
-# Ignore compiled classes anywhere
-**/*.class
-
-# Lock files (optional - adjust if you commit these intentionally)
-# package-lock.json
-# yarn.lock
+# temporary files
+*.tmp
+*.swp
 

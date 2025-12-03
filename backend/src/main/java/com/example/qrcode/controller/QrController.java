@@ -2,19 +2,24 @@ package com.example.qrcode.controller;
 
 import com.example.qrcode.dto.QrResponse;
 import com.example.qrcode.service.QrService;
+import com.example.qrcode.repository.TimeLogRepository;
+import com.example.qrcode.model.TimeLog;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
 public class QrController {
     private final QrService qrService;
+    private final TimeLogRepository timeLogRepository;
 
-    public QrController(QrService qrService) {
+    public QrController(QrService qrService, TimeLogRepository timeLogRepository) {
         this.qrService = qrService;
+        this.timeLogRepository = timeLogRepository;
     }
 
     public static class UserRequest { public String userId; }
@@ -48,5 +53,11 @@ public class QrController {
         qrService.createAndSaveTimeLog(userId, action);
         return ResponseEntity.ok(Map.of("status","ok"));
     }
-}
 
+    @GetMapping("/timelogs")
+    public ResponseEntity<List<TimeLog>> getTimeLogs(@RequestParam String userId) {
+        return ResponseEntity.ok(timeLogRepository.findAll().stream()
+            .filter(tl -> tl.getUserId().equals(userId))
+            .toList());
+    }
+}
