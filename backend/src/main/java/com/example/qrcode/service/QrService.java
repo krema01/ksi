@@ -2,8 +2,6 @@ package com.example.qrcode.service;
 
 import com.example.qrcode.config.AppConfig;
 import com.example.qrcode.dto.QrResponse;
-import com.example.qrcode.model.TimeLog;
-import com.example.qrcode.repository.TimeLogRepository;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -12,6 +10,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -21,19 +20,25 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Map;
 
+import com.example.qrcode.model.QrCode;
+import com.example.qrcode.repository.QrCodeRepository;
+
 @Service
-public class QrService {
+public class QrService implements QrServiceApi {
     private final AppConfig appConfig;
-    private final TimeLogRepository repo;
 
     @Value("${QR_SECRET:}")
     private String qrSecret;
 
     private Mac hmac;
 
-    public QrService(AppConfig appConfig, TimeLogRepository repo) {
+    // optional repository wiring - not final so we can support tests constructing this class directly
+    @Autowired(required = false)
+    private QrCodeRepository qrCodeRepo;
+
+    // single constructor used for both Spring and unit tests
+    public QrService(AppConfig appConfig) {
         this.appConfig = appConfig;
-        this.repo = repo;
     }
 
     @PostConstruct
@@ -87,6 +92,16 @@ public class QrService {
                 // payload already JSON string; embed raw
                 payload,
                 signature);
+        // persist the QR record so we can later mark it used
+        try {
+            if (qrCodeRepo != null) {
+                QrCode qr = new QrCode(signature, qrJson);
+                qrCodeRepo.save(qr);
+            }
+        } catch (Exception e) {
+            // non-fatal: log to stdout (avoid introducing logger) and continue
+            System.err.println("Warning: failed to persist QR record: " + e.getMessage());
+        }
         String image = toQrDataUrl(qrJson, 300);
         return new QrResponse(payload, signature, image);
     }
@@ -118,14 +133,25 @@ public class QrService {
             String v = kv[1].trim();
             if (k.startsWith("\"") && k.endsWith("\"")) k = k.substring(1,k.length()-1);
             if (v.startsWith("\"") && v.endsWith("\"")) v = v.substring(1,v.length()-1);
+            // unescape common escape sequences produced by makePayload
+            v = unescape(v);
             map.put(k, v);
         }
         return map;
     }
 
-    public TimeLog createAndSaveTimeLog(String userId, String action) {
-        TimeLog t = new TimeLog(userId, action, Instant.now());
-        return repo.save(t);
+    // simple unescape: turns sequences like \" -> " and \\ -> \\
+    private String unescape(String s) {
+        StringBuilder sb = new StringBuilder(s.length());
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '\\' && i + 1 < s.length()) {
+                i++;
+                sb.append(s.charAt(i));
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 }
-

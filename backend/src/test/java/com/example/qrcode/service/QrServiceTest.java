@@ -1,13 +1,8 @@
 package com.example.qrcode.service;
 
 import com.example.qrcode.config.AppConfig;
-import com.example.qrcode.model.TimeLog;
-import com.example.qrcode.repository.TimeLogRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
-import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,9 +17,7 @@ public class QrServiceTest {
         java.lang.reflect.Field fCfg = AppConfig.class.getDeclaredField("qrExpirationSeconds");
         fCfg.setAccessible(true);
         fCfg.setLong(cfg, 2L);
-        // repository isn't needed for these unit tests; pass null
-        TimeLogRepository repo = null;
-        qrService = new QrService(cfg, repo);
+        qrService = new QrService(cfg);
         // set secret via reflection
         java.lang.reflect.Field f = QrService.class.getDeclaredField("qrSecret");
         f.setAccessible(true);

@@ -16,6 +16,9 @@
     <properties>
         <java.version>25</java.version>
         <spring.boot.version>3.2.0</spring.boot.version>
+        <!-- By default skip JaCoCo agent because the installed JDK may be newer than JaCoCo supports.
+             To enable coverage run with -Djacoco.skip=false or use a supported JDK (17/21) or upgrade JaCoCo. -->
+        <jacoco.skip>true</jacoco.skip>
     </properties>
 
     <dependencies>
@@ -73,9 +76,36 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <!-- compile for Java 21 to maintain compatibility with Spring tooling while running on Java 25 -->
+                    <!-- compile for Java 17 to maintain compatibility with Spring tooling while running on Java 25 -->
                     <release>17</release>
                 </configuration>
+            </plugin>
+            <!-- JaCoCo code coverage plugin -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.10</version>
+                <configuration>
+                    <!-- honor property to skip agent when running on newer JDKs that JaCoCo doesn't support -->
+                    <skip>${jacoco.skip}</skip>
+                </configuration>
+                <executions>
+                    <!-- prepare agent for unit tests (skipped by default via property) -->
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <!-- generate report after tests in verify phase -->
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

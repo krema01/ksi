@@ -12,10 +12,14 @@ export default function App(){
   const [logs, setLogs] = useState([])
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(5)
+  const [misuseReason, setMisuseReason] = useState(null)
+  const [misuses, setMisuses] = useState([])
+  const [showMisuses, setShowMisuses] = useState(false)
 
   async function requestQr(action){
     setLoading(true)
     setStatus('')
+    setMisuseReason(null)
     try{
       const res = await axios.post(`/api/qrcode/${action}`, { userId })
       setImg(res.data.qrImage)
@@ -28,6 +32,16 @@ export default function App(){
     setLoading(false)
   }
 
+  async function fetchMisuses(){
+    try{
+      const res = await axios.get('/api/misuses', { params: { userId } })
+      setMisuses(res.data || [])
+      setShowMisuses(true)
+    }catch(e){
+      setStatus('Fehler beim Laden der Misuse-Einträge: ' + (e.response?.data || e.message))
+    }
+  }
+
   async function simulateScan(){
     if(!payload || !signature){
       setStatus('Keine QR-Daten vorhanden — bitte erst QR generieren')
@@ -35,9 +49,16 @@ export default function App(){
     }
     setLoading(true)
     setStatus('Simuliere Scan...')
+    setMisuseReason(null)
     try{
-      await axios.post(`/api/scan`, { payload, signature })
-      setStatus('Scan erfolgreich — Eintrag gespeichert')
+      const res = await axios.post(`/api/scan`, { payload, signature })
+      // backend now returns { status: 'ok', misuse: boolean, reason?: string }
+      if(res.data && res.data.misuse){
+        setStatus('Warnung: Doppelbuchung erkannt — Eintrag wurde dennoch gespeichert')
+        setMisuseReason(res.data.reason || 'Unbekannter Grund')
+      } else {
+        setStatus('Scan erfolgreich — Eintrag gespeichert')
+      }
       await fetchLogs()
     }catch(e){
       setStatus('Fehler beim Simulieren: ' + (e.response?.data || e.message))
@@ -91,6 +112,11 @@ export default function App(){
           </button>
         </div>
         {status && <div className={status.startsWith('Fehler') ? 'status error' : 'status'}>{status}</div>}
+        {misuseReason && (
+          <div className="status warning" style={{marginTop:8}}>
+            <strong>Warnung:</strong> {misuseReason}
+          </div>
+        )}
         {img && (
           <div className="qr-section">
             <img src={img} alt="qr" className="qr-img" />
@@ -118,6 +144,7 @@ export default function App(){
                   </select>
                 </label>
                 <button className="link-btn" onClick={fetchLogs} disabled={loading}>Aktualisieren</button>
+                <button className="link-btn" onClick={fetchMisuses} disabled={loading}>Show Misuses</button>
               </div>
             </div>
 
@@ -145,6 +172,26 @@ export default function App(){
               <div className="page-indicator">Seite {page} / {totalPages}</div>
               <button onClick={nextPage} disabled={page>=totalPages}>Next &rarr;</button>
             </div>
+          </div>
+        )}
+        {showMisuses && (
+          <div style={{width:'100%', marginTop:14}} className="misuses-wrapper">
+            <h3>Misuse Records ({misuses.length})</h3>
+            <table className="logs-table">
+              <thead>
+                <tr><th>Timestamp</th><th>User</th><th>Action</th><th>Reason</th></tr>
+              </thead>
+              <tbody>
+                {misuses.map(m => (
+                  <tr key={m.id}>
+                    <td>{new Date(m.timestamp).toLocaleString()}</td>
+                    <td>{m.userId}</td>
+                    <td>{m.action}</td>
+                    <td>{m.reason}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
