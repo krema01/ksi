@@ -9,17 +9,13 @@ const publicRoute = createRoute({
   component: () => <Outlet />,
 });
 
-// const landingRoute = createRoute({
-//   getParentRoute: () => publicRoute,
-//   path: "/",
-//   component: () => (
-//     <main>
-//       <Box p={"lg"}>
-//         <Calender />
-//       </Box>
-//     </main>
-//   ),
-// });
+// Add a landing (index) route so the root path "/" is matched.
+// For now it renders the `LoginPage` — change this to your real landing component if you have one.
+const landingRoute = createRoute({
+  getParentRoute: () => publicRoute,
+  path: "/",
+  component: () => <LoginPage />,
+});
 
 const loginRoute = createRoute({
   getParentRoute: () => publicRoute,
@@ -29,6 +25,6 @@ const loginRoute = createRoute({
 });
 
 export const publicRouter = publicRoute.addChildren([
-  // landingRoute,
+  landingRoute,
   loginRoute,
 ]);

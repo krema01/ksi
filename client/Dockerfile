@@ -11,7 +11,8 @@ RUN npm install
 # 3. Copy the rest of the app (but NOT node_modules)
 COPY . .
 
-# 4. Expose dev server port
-EXPOSE 3000
+# 4. Expose Vite dev server port (default 5173)
+EXPOSE 5173
 
-CMD ["npm", "run", "dev", "--", "--host"]
+# Start Vite dev server and bind to 0.0.0.0 so it's accessible from outside the container
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
