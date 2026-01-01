@@ -19,13 +19,13 @@ export function AuthenticationForm() {
   useEffect(() => {
     if (role) {
       switch (role) {
-        case "admin":
+        case "ADMIN":
           navigation({ to: "/admin/users" });
           return;
-        case "user":
+        case "USER":
           navigation({ to: "/user/checkin" });
           return;
-        case "qrCode":
+        case "QRCODE":
           navigation({ to: "/qr_code/code" });
           return;
       }

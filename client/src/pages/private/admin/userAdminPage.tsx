@@ -8,12 +8,11 @@ import { EditDeleteButton } from "../../../components/Buttons/EditDeleteButton";
 export function UserAdminPage() {
   const { addUser, users, updateUser, removeUser } = useUserEntryStore();
 
-  const openCreateModal = (user: UserEntry) => {
+  const openCreateModal = () => {
     modals.openContextModal({
       modal: "CreateUserModal",
       title: "Create User",
       innerProps: {
-        User: user,
         submitUser: addUser,
       },
       centered: true,
@@ -36,16 +35,7 @@ export function UserAdminPage() {
     {
       accessor: "actions",
       width: 70,
-      title: (
-        <TableAddButton
-          addItem={() => {
-            const maxId =
-              users.length > 0 ? Math.max(...users.map((u) => u.id)) + 1 : 0;
-
-            openCreateModal({ id: maxId, name: "", role: "user" });
-          }}
-        />
-      ),
+      title: <TableAddButton addItem={openCreateModal} />,
       render: (user) => (
         <EditDeleteButton
           onEdit={() => {

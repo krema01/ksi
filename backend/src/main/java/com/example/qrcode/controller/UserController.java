@@ -31,11 +31,17 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    public static class CreateUserRequest { public String username; public String password; public String role; public String name; }
+    public static class CreateUserRequest {
+        public String username;
+        public String password;
+        public String role;
+        public String name;
+    }
 
     @PostMapping("/user")
     public ResponseEntity<UserDto> createUser(@RequestBody CreateUserRequest req) {
-        if (req == null || req.username == null || req.password == null || req.role == null) return ResponseEntity.badRequest().build();
+        if (req == null || req.username == null || req.password == null || req.role == null)
+            return ResponseEntity.badRequest().build();
         User u = new User(req.username, req.password, req.role, req.name);
         u = userRepository.save(u);
         return ResponseEntity.ok(new UserDto(u.getId(), u.getUsername(), u.getRole(), u.getName()));
@@ -43,20 +49,31 @@ public class UserController {
 
     @DeleteMapping("/user/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        if (!userRepository.existsById(id)) return ResponseEntity.notFound().build();
+        if (!userRepository.existsById(id))
+            return ResponseEntity.notFound().build();
         userRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
 
-    public static class UpdateUserRequest { public String name; public String role; }
+    public static class UpdateUserRequest {
+        public String name;
+        public String username;
+        public String role;
+    }
 
     @PutMapping("/user/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest req) {
         Optional<User> maybe = userRepository.findById(id);
-        if (maybe.isEmpty()) return ResponseEntity.notFound().build();
+        if (maybe.isEmpty())
+            return ResponseEntity.notFound().build();
         User u = maybe.get();
-        if (req.name != null) u.setName(req.name);
-        if (req.role != null) u.setRole(req.role);
+        if (req.name != null)
+            u.setName(req.name);
+        if (req.username != null)
+            u.setUsername(req.username);
+        if (req.role != null)
+            u.setRole(req.role);
+
         userRepository.save(u);
         return ResponseEntity.ok(new UserDto(u.getId(), u.getUsername(), u.getRole(), u.getName()));
     }

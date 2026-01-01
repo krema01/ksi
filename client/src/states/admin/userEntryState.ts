@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { UserEntry } from "../../models/models";
+import { fetchJSON } from "../../utils/api";
 
 type UserEntryStore = {
   users: UserEntry[];
@@ -12,26 +13,43 @@ type UserEntryStore = {
 
 export const useUserEntryStore = create<UserEntryStore>((set, get) => ({
   fetchUsers: async () => {
-    console.log("fetch users");
-    // const users = await fetch("/api/users").then((res) => res.json());
+    const response = await fetchJSON<UserEntry[]>("/api/users", {
+      method: "GET",
+    });
 
-    set({ users: [] });
+    set({ users: response });
   },
   users: [],
-  addUser: (user) =>
+  addUser: async (user) => {
+    const response = await fetchJSON<UserEntry>("/api/user", {
+      method: "POST",
+      body: JSON.stringify(user),
+    });
+
     set((state) => ({
-      users: [...state.users, user],
-    })),
-  removeUser: (id) =>
+      users: [...state.users, response],
+    }));
+  },
+  removeUser: async (id) => {
+    await fetchJSON<UserEntry>("/api/user/" + id, {
+      method: "DELETE",
+    });
+
     set((state) => ({
       users: state.users.filter((u) => u.id !== id),
-    })),
+    }));
+  },
   clearUsers: () => set({ users: [] }),
-  updateUser: (user) => {
+  updateUser: async (user) => {
+    const response = await fetchJSON<UserEntry>("/api/user/" + user.id, {
+      method: "PUT",
+      body: JSON.stringify(user),
+    });
+
     const users = get().users.filter((u) => u.id !== user.id);
 
     set(() => ({
-      users: [...users, user],
+      users: [...users, response],
     }));
   },
 }));

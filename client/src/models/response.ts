@@ -1,30 +1,25 @@
-// models.ts
-export interface Shift {
+import type { Role } from "./models";
+
+export interface LoginResponse {
+  username: string;
   id: number;
-  date: string;
-  groups: string[];
-  name: string;
+  role: Role;
+  token: string;
 }
 
-export interface Assignment {
-  shift: Shift;
-  workerId: number;
-  workerName: string;
-  workerGroups: string[];
-}
-
-export interface Day {
-  day: string;
-  assignments: Assignment[];
-}
-
-export interface WorkerInfo {
+export interface RawTimeEntry {
   id: number;
-  name: string;
-  hours: number;
+  userId?: number;
+  from?: string;
+  until?: string;
 }
 
-export interface Week {
-  days: Day[];
-  outWorkerInfo: WorkerInfo[];
+export interface ScanResponse {
+  misuse: boolean;
+  reson: string;
+}
+
+export interface QRResponse {
+  payload: string;
+  signature: string;
 }

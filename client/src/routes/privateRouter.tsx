@@ -1,14 +1,15 @@
 import { createRoute, Outlet } from "@tanstack/react-router";
 import { rootRoute } from "./router";
 import { TimeEntryAdminPage } from "../pages/private/admin/timeEntryAdminPage";
-import { QrCodePage } from "../pages/private/qrCode/qrCodePage";
-import { UserCheckinPage } from "../pages/private/user/userCheckinPage";
 import { UserAdminPage } from "../pages/private/admin/userAdminPage";
 import { QrCodeShell } from "../components/Shell/qrCodeShell";
 import { AdminShell } from "../components/Shell/adminShell";
 import { UserShell } from "../components/Shell/userShell";
-import { UserCheckoutPage } from "../pages/private/user/userCheckoutPage";
 import { DashboardPage } from "../pages/private/user/dashboardPage";
+import { getUserStore } from "../states/admin/userEntryState";
+import { getTimeEntryStore } from "../states/admin/timeEntryState";
+import { UserQrPage } from "../pages/private/user/UserQrPage";
+import { QrScanPage } from "../pages/private/qrCode/qrScanPage";
 
 // Layout-Route mit AppShell
 const appRoute = createRoute({
@@ -24,10 +25,10 @@ const qrCodeRoute = createRoute({
   component: () => <QrCodeShell />,
 });
 
-const qrCodeCodeRoute = createRoute({
+const scanRoute = createRoute({
   getParentRoute: () => qrCodeRoute,
-  path: "/code",
-  component: () => <QrCodePage />,
+  path: "/scan",
+  component: () => <QrScanPage />,
 });
 
 // User Routes
@@ -41,18 +42,23 @@ const userDashboardRoute = createRoute({
   getParentRoute: () => userRoute,
   path: "/dashboard",
   component: () => <DashboardPage />,
+  beforeLoad: async () => {
+    // Fetch users before loading the route
+    const { fetchUsers } = getUserStore();
+    await fetchUsers();
+  },
 });
 
 const userCheckinRoute = createRoute({
   getParentRoute: () => userRoute,
   path: "/checkin",
-  component: () => <UserCheckinPage />,
+  component: () => <UserQrPage action="checkin" />,
 });
 
 const userCheckoutRoute = createRoute({
   getParentRoute: () => userRoute,
   path: "/checkout",
-  component: () => <UserCheckoutPage />,
+  component: () => <UserQrPage action="checkout" />,
 });
 
 // Admin Routes
@@ -66,18 +72,30 @@ const adminTimeEntryRoute = createRoute({
   getParentRoute: () => adminRoute,
   path: "/time_entries",
   component: () => <TimeEntryAdminPage />,
+  beforeLoad: async () => {
+    // Fetch time entries before loading the route
+    const { fetchTimeEntrys } = getTimeEntryStore();
+    await fetchTimeEntrys();
+    const { fetchUsers } = getUserStore();
+    await fetchUsers();
+  },
 });
 
 const adminUserRoute = createRoute({
   getParentRoute: () => adminRoute,
   path: "/users",
   component: () => <UserAdminPage />,
+  beforeLoad: async () => {
+    // Fetch users before loading the route
+    const { fetchUsers } = getUserStore();
+    await fetchUsers();
+  },
 });
 
 // Router export
 export const privateRouter = appRoute.addChildren([
   adminRoute.addChildren([adminTimeEntryRoute, adminUserRoute]),
-  qrCodeRoute.addChildren([qrCodeCodeRoute]),
+  qrCodeRoute.addChildren([scanRoute]),
   userRoute.addChildren([
     userDashboardRoute,
     userCheckinRoute,

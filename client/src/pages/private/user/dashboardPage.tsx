@@ -13,7 +13,8 @@ export function DashboardPage() {
     {
       accessor: "userId",
       title: "workerName",
-      render: (entry) => users.find((w) => w.id === entry.userId)?.name || "",
+      render: (entry) =>
+        users.find((w) => w.id === entry.userId)?.username || "",
     },
     {
       accessor: "from",

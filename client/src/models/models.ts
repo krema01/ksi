@@ -7,10 +7,11 @@ export type TimeEntry = {
   until?: dayjs.Dayjs;
 };
 
-export type Role = "admin" | "user" | "qrCode";
+export type Role = "ADMIN" | "USER" | "QRCODE";
 
 export type UserEntry = {
   id: number;
   name: string;
   role: Role;
+  username: string;
 };

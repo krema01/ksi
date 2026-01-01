@@ -2,8 +2,10 @@ import { Html5Qrcode } from "html5-qrcode";
 import { useEffect, useRef, useState } from "react";
 import { Button, Center, Group, Stack, Text, ThemeIcon } from "@mantine/core";
 import { IconQrcode } from "@tabler/icons-react";
+import { fetchJSON } from "../../../utils/api";
+import type { ScanResponse } from "../../../models/response";
 
-export function UserCheckinPage() {
+export function QrScanPage() {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const [active, setActive] = useState(false);
 
@@ -16,11 +18,16 @@ export function UserCheckinPage() {
     await scanner.start(
       { facingMode: "environment" },
       { fps: 10, qrbox: { width: 250, height: 250 } },
-      (text) => {
-        console.log("QR Code detected:", text);
-        // Handle the scanned QR code text here
-        // send uuid to backend to check in
-        // todo
+      (text) => async () => {
+        const response = await fetchJSON<ScanResponse>("/api/scan", {
+          method: "POST",
+          body: JSON.stringify(text),
+        });
+
+        if (response.misuse) {
+          alert("Missbrauch erkannt: " + response.reson);
+        }
+
         stopScanner();
         navigator.vibrate?.(200);
       },
@@ -67,7 +74,7 @@ export function UserCheckinPage() {
           />
 
           <Group mb="sm">
-            {!active && <Button onClick={startScanner}>Checkin starten</Button>}
+            {!active && <Button onClick={startScanner}>Scan starten</Button>}
             {active && (
               <Button color="red" onClick={stopScanner}>
                 Stoppen

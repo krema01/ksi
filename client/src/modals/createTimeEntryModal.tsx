@@ -67,7 +67,7 @@ export function CreateTimeEntryModal({
           label="Worker"
           placeholder="Pick value"
           data={users.map((u) => {
-            return { label: u.name, value: u.id.toString() };
+            return { label: u.username, value: u.id.toString() };
           })}
           {...form.getInputProps("userId")}
         />
